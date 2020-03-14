@@ -6,13 +6,14 @@ public class PlayerMovement : MonoBehaviour
     public float maxSpeed;
     public float jumpScalar;
 
-    private Rigidbody2D rb;
+    private Rigidbody2D rigidBody;
     private bool isGrounded = false;
+    private bool isJumpPressed = false;
 
     // Start is called before the first frame update
     void Start()
     {
-        rb = this.gameObject.GetComponent<Rigidbody2D>();
+        rigidBody = this.gameObject.GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -20,18 +21,22 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetButtonDown("Jump") && isGrounded) 
         {
-            var jumpForce = new Vector2(0, jumpScalar);
-            rb.AddForce(jumpForce);
+            isJumpPressed = true;
         }
     }
 
     void FixedUpdate() {
-       float xMovement = Input.GetAxis("Horizontal");
+       var xMovement = Input.GetAxis("Horizontal");
 
-        if (rb.velocity.magnitude < maxSpeed) 
+        if (rigidBody.velocity.magnitude < maxSpeed) 
         {
             var movement = new Vector2(xMovement, 0);
-            rb.AddForce(movementScalar * movement);
+            rigidBody.AddForce(movementScalar * movement);
+        }
+
+        if (isJumpPressed) {
+            rigidBody.AddForce(new Vector2(0, jumpScalar));
+            isJumpPressed = false;
         }
     }
 
@@ -51,8 +56,8 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void OnBecameInvisible() {
-        this.gameObject.transform.position = new Vector3(0, 0, 0);
-        rb.velocity = new Vector2(0, 0);
+        this.gameObject.transform.position = new Vector3(-7.5f, -1.5f, 0);
+        rigidBody.velocity = new Vector2(0, 0);
     }
     
 }
